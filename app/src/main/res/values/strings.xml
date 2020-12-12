@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">DeviceSearcher</string>
+
+    <!-- MainActivityのトースト用 -->
+    <string name="bluetooth_is_not_supported">Bluetooth is not supported.</string>
+    <string name="bluetooth_is_not_working">Bluetooth is not working.</string>
+
+    <string name="gps_is_not_working">GPS is not working.</string>
+
+    <!-- MainActivity メニュー用 -->
+    <string name="search">Search</string>
+    <!-- MainActivity ラベル用 -->
+    <string name="device_name">Device Name : </string>
+    <string name="device_address">Device Address : </string>
+    <!-- DeviceListActivity トースト用 -->
+    <string name="unknown_device">Unknown device</string>
+    <!-- DeviceListActivity メニュー用 -->
+    <string name="scan">Scan</string>
+    <string name="stop">Stop</string>
+    
+    <!-- text -->
+    <string name="around_device">周囲のBluetoothデバイスは</string>
+    <string name="string_num">台です</string>
+    <string name="button_update">更新</string>
+</resources>

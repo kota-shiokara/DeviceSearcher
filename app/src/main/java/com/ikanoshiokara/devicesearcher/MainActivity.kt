@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     private var mDeviceList: ArrayList<BluetoothDevice> = arrayListOf()
     private var mScanning: Boolean = false             // スキャン中かどうかのフラグ
 
-
     // Create a BroadcastReceiver for ACTION_FOUND.
     private val receiver = object : BroadcastReceiver() {
 
@@ -64,10 +63,14 @@ class MainActivity : AppCompatActivity() {
                             "Bluetooth検出開始",
                             Toast.LENGTH_SHORT
                     ).show()
+                    mScanning = true
                     return
                 }
-                BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    mBluetoothAdapter.cancelDiscovery()
+                BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> { //cancelDiscoveryでも呼ばれる
+                    if(mScanning) {
+                        //mBluetoothAdapter.cancelDiscovery()
+                        mScanning = false
+                    }
                     /*val textView = TextView(context)
                     textView.text = "TimeStamp: ${SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date())}\n" +
                             "DeviceOfNumber: ${mDeviceList.size}\n"
@@ -120,16 +123,33 @@ class MainActivity : AppCompatActivity() {
                 Log.d("cancelFailed", "cancelDiscovery() failed")
             }
 
-            if(mBluetoothAdapter.startDiscovery()){
-                Log.d("startSuccess", "startDiscovery() success")
-            }else{
-                Log.d("startFailed", "startDiscovery() failed")
+            if(!mScanning){
+                if(mBluetoothAdapter.startDiscovery()){
+                    Log.d("startSuccess", "startDiscovery() success")
+                }else{
+                    Log.d("startFailed", "startDiscovery() failed")
+                }
             }
-
             Toast.makeText(
                     this,
                     "Update Button Clicked!!",
                     Toast.LENGTH_SHORT
+            ).show()
+        })
+
+        var cancelButton: Button = findViewById(R.id.cancel_button)
+        cancelButton.setOnClickListener(View.OnClickListener {
+            Log.d("clickCancelButton", "Cancel Button Clicked!!")
+            if(mBluetoothAdapter.cancelDiscovery()){
+                Log.d("cancelSuccess", "cancelDiscovery() success")
+            }else{
+                Log.d("cancelFailed", "cancelDiscovery() failed")
+            }
+
+            Toast.makeText(
+                this,
+                "Cancel Button Clicked!!",
+                Toast.LENGTH_SHORT
             ).show()
         })
     }
@@ -186,5 +206,6 @@ class MainActivity : AppCompatActivity() {
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(receiver)
         mBluetoothAdapter.cancelDiscovery()
+        mScanning = false
     }
 }

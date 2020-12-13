@@ -46,14 +46,15 @@ class MainActivity : AppCompatActivity() {
                     // object and its info from the Intent.
                     val device: BluetoothDevice? =
                             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    if(device != null){
-                        Log.d("nonNullDevice", "Device: ${device.name}")
-                    }else{
+                    if(device == null){
                         Log.d("nullDevice", "Device is null")
+                        return
                     }
                     val deviceName = device?.name
                     val deviceHardwareAddress = device?.address // MAC address
-                    Log.d("device", "Device name: ${deviceName}, address:${deviceHardwareAddress}")
+                    val deviceUUID = device?.uuids
+                    val deviceRssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
+                    Log.d("device", "Device name: ${deviceName}, address:${deviceHardwareAddress}, UUID:${deviceUUID}, RSSI:${deviceRssi}")
                     //mDeviceList.add(device!!)
                     return
                 }
@@ -76,6 +77,12 @@ class MainActivity : AppCompatActivity() {
                             "DeviceOfNumber: ${mDeviceList.size}\n"
 
                     device_num_list.addView(textView)*/
+
+                    Toast.makeText(
+                        context,
+                        "Bluetooth検出終了",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     Log.d("discoveryFin", "Discovery finished")
                 }
             }

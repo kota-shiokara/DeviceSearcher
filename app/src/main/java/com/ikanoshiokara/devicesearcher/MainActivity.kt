@@ -19,12 +19,12 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_ENABLEBLUETOOTH: Int = 1 // Bluetooth機能の有効化要求時の識別コード
     private val MY_REQUEST_CODE: Int = 2 // 位置情報要求時の識別コード
     private lateinit var mBluetoothAdapter: BluetoothAdapter // アダプター
-    private var isGpsEnabled: Boolean = true
+    private var isGpsEnabled: Boolean = false // GPSの許可
 
     private lateinit var device_num_list: LinearLayout // レイアウト
 
     private var mDeviceList: MutableList<BluetoothDevice> = mutableListOf()
-    private var mScanning: Boolean = false             // スキャン中かどうかのフラグ
+    private var mScanning: Boolean = false // スキャン中かどうかのフラグ
 
     private val receiver = object : BroadcastReceiver() {
 

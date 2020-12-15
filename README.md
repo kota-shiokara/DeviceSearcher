@@ -1,6 +1,6 @@
 # DeviceSearcher
 周囲のBluetoothデバイスを検知するAndroidアプリ
-![app image](https://pbs.twimg.com/media/EpSMhgkUUAIBl0f?format=jpg&name=orig)
+![app image](https://pbs.twimg.com/media/EpSMhgkUUAIBl0f?format=jpg&name=medium)
 
 ## Author
 - [kota-shiokara](https://github.com/kota-shiokara)

@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private var mDeviceList: MutableList<BluetoothDevice> = mutableListOf()
     private var mScanning: Boolean = false // スキャン中かどうかのフラグ
+    private var isPauseCalled: Boolean = false
 
     private val receiver = object : BroadcastReceiver() {
 
@@ -41,18 +42,18 @@ class MainActivity : AppCompatActivity() {
                         return
                     }
 
-                    val deviceName = device?.name
-                    val deviceHardwareAddress = device?.address // MAC address
-                    val deviceUUID = device?.uuids
-                    val deviceRssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
-                    Log.d("device", "Device name: ${deviceName}, address:${deviceHardwareAddress}, UUID:${deviceUUID}, RSSI:${deviceRssi}")
+                    val deviceName = device.name
+                    val deviceHardwareAddress = device.address // MAC address
+                    val deviceUUID = device.uuids
+                    val deviceRSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
+                    Log.d("device", "Device name: ${deviceName}, address:${deviceHardwareAddress}, UUID:${deviceUUID}, RSSI:${deviceRSSI}")
 
                     // デバイスリストに入れたかった
                     //mDeviceList.add(device!!)
 
                     // MainActivityのScrollViewに検知したデバイスのデータを表示
                     val textView = TextView(context)
-                    textView.text = "Device name: ${deviceName}\naddress:${deviceHardwareAddress}, UUID:${deviceUUID}, RSSI:${deviceRssi}"
+                    textView.text = "Device name: ${deviceName}\naddress:${deviceHardwareAddress}, UUID:${deviceUUID}, RSSI:${deviceRSSI}"
                     device_num_list.addView(textView)
 
                     return
@@ -96,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         device_num_list = findViewById(R.id.device_num_list)
 
         var bluetoothManager: BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        mBluetoothAdapter = bluetoothManager.getAdapter()
+        mBluetoothAdapter = bluetoothManager.adapter
         if (null == mBluetoothAdapter) {    // Android端末がBluetoothをサポートしていない
             Toast.makeText(
                     this,
@@ -109,12 +110,7 @@ class MainActivity : AppCompatActivity() {
 
         // 位置情報許可の確認
         var locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        // Receiverの登録
-        registerReceiver(receiver, IntentFilter(BluetoothDevice.ACTION_FOUND))
-        registerReceiver(receiver, IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED))
-        registerReceiver(receiver, IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
+        isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
         // Update Buttonのクリックリスナー設定
         var updateButton: Button = findViewById(R.id.update_button)
@@ -189,6 +185,13 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         requestLocationFeature()
         requestBluetoothFeature()
+
+        // Receiverの登録
+        registerReceiver(receiver, IntentFilter(BluetoothDevice.ACTION_FOUND))
+        registerReceiver(receiver, IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED))
+        registerReceiver(receiver, IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
+
+        isPauseCalled = false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -219,12 +222,23 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         Log.d("discovery", "${mBluetoothAdapter.isDiscovering}")
-        // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(receiver)
         mBluetoothAdapter.cancelDiscovery()
         mScanning = false
+        isPauseCalled = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(!isPauseCalled){
+            Log.d("discovery", "${mBluetoothAdapter.isDiscovering}")
+            // Don't forget to unregister the ACTION_FOUND receiver.
+            unregisterReceiver(receiver)
+            mBluetoothAdapter.cancelDiscovery()
+            mScanning = false
+        }
     }
 }
